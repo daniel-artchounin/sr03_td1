@@ -8,6 +8,6 @@ struct obj{
 	int jj;
 	double dd;
 };
-
 typedef struct obj obj;
+
 #endif

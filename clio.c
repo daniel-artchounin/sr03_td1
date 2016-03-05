@@ -23,11 +23,12 @@
       fin
 */
 
-int main(int argc, char** argv){
+int main(int argc, char **argv){
 	int sd;
 	struct sockaddr_in saddrcli, saddrser;
-	struct hostent * hid;
+	struct hostent *hid;
 
+	// Initialisation du tableau d'objets
 	strcpy(tableau[0].id,"ident_o1");
 	strcpy(tableau[0].descrition,"description_o1");
 	tableau[0].ii = 11;
@@ -46,7 +47,7 @@ int main(int argc, char** argv){
 	tableau[2].jj = 32;
 	tableau[2].dd = 30.2345;
 
-
+	tableau[3].ii = -1;
 
 	// Création d'un socket
 	sd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -55,20 +56,8 @@ int main(int argc, char** argv){
 		exit(-1);
 	}
 
-	// Fournir une addresse à une socket
-	bzero(&saddrcli, sizeof(saddrcli)); // Initialisation à zero de la structure
-	saddrcli.sin_family = AF_INET;
-	saddrcli.sin_addr.s_addr = htonl(INADDR_ANY); //fais des échanges d'octet si on est en big indian
-	saddrcli.sin_port = 0; //recherche le premier port libre pour l'utiliser
-
-	int bd = bind(sd, (const struct sockaddr*)&saddrcli, sizeof(saddrcli));
-	if(bd == -1){
-		perror("bind()");
-		exit(-1);
-	}
-
-	//Construction de l'address du serveur
-	bzero(&saddrser, sizeof(saddrser));
+	// Construction de l'addresse du serveur
+	bzero(&saddrser, sizeof(saddrser)); // Initialisation à zero de la structure
 	saddrser.sin_family = AF_INET;
 	saddrser.sin_addr.s_addr = htonl(INADDR_ANY);
 	saddrser.sin_port = htons(atoi(argv[2]));
@@ -87,14 +76,12 @@ int main(int argc, char** argv){
 		perror("bind()");
 		exit(-1);
 	}
-
+	printf("coucou\n");
 	int e = send(sd, &tableau[0], sizeof(obj), 0);
 	if (e == -1){
 		perror("send()");
-		exit(-1);
-		
+		exit(-1);	
 	}
-
 }
 
 
