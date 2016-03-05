@@ -1,7 +1,8 @@
 #ifndef INIOBJ
 #define INIOBJ
-#define TABLEN 10
+
 #include "defobj.h"
+#define TABLEN 10
 
 obj tableau[TABLEN];
 

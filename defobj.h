@@ -3,7 +3,7 @@
 
 struct obj{
 	char id[12];
-	char descrition[24];
+	char description[24];
 	int ii;
 	int jj;
 	double dd;

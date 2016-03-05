@@ -24,30 +24,37 @@
 */
 
 int main(int argc, char **argv){
-	int sd;
-	struct sockaddr_in saddrcli, saddrser;
+	int sd, i = 0;
+	struct sockaddr_in saddrser;
 	struct hostent *hid;
 
 	// Initialisation du tableau d'objets
 	strcpy(tableau[0].id,"ident_o1");
-	strcpy(tableau[0].descrition,"description_o1");
+	strcpy(tableau[0].description,"description_o1");
 	tableau[0].ii = 11;
 	tableau[0].jj = 12;
 	tableau[0].dd = 10.2345;
 
 	strcpy(tableau[1].id,"ident_o2");
-	strcpy(tableau[1].descrition,"description_o2");
+	strcpy(tableau[1].description,"description_o2");
 	tableau[1].ii = 21;
 	tableau[1].jj = 22;
 	tableau[1].dd = 20.2345;
 
 	strcpy(tableau[2].id,"ident_o3");
-	strcpy(tableau[2].descrition,"description_o3");
+	strcpy(tableau[2].description,"description_o3");
 	tableau[2].ii = 31;
 	tableau[2].jj = 32;
 	tableau[2].dd = 30.2345;
 
-	tableau[3].ii = -1;
+	tableau[3].ii = -1; // Marqueur de fin
+
+	// Vérification du bon nombre de paramètres
+	if ((argc < 3) || (argc > 3)){
+		fprintf(stderr, "Usage : %s <Nom de domaine du serveur> <Numéro de " \
+		"port du serveur>\n", argv[0]);
+		exit(1);
+	}
 
 	// Création d'un socket
 	sd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -56,12 +63,12 @@ int main(int argc, char **argv){
 		exit(-1);
 	}
 
-	// Construction de l'addresse du serveur
-	bzero(&saddrser, sizeof(saddrser)); // Initialisation à zero de la structure
+	// Construction de l'adresse du serveur
+	bzero(&saddrser, sizeof(saddrser)); // Initialisation à zéro de la structure
 	saddrser.sin_family = AF_INET;
 	saddrser.sin_addr.s_addr = htonl(INADDR_ANY);
 	saddrser.sin_port = htons(atoi(argv[2]));
-	hid = gethostbyname(argv[1]); //Demande au DNS l'@IP du serveur d'après son nom
+	hid = gethostbyname(argv[1]); // Demande au DNS l'@IP du serveur d'après son nom
 	if(hid == NULL){
 		perror("gethostbyname()");
 		exit(-1);
@@ -76,12 +83,16 @@ int main(int argc, char **argv){
 		perror("bind()");
 		exit(-1);
 	}
-	printf("coucou\n");
-	int e = send(sd, &tableau[0], sizeof(obj), 0);
-	if (e == -1){
-		perror("send()");
-		exit(-1);	
+
+	// Envoi des objets
+	for(i=0; i<TABLEN;i++){
+		ssize_t e = send(sd, tableau+i, sizeof(obj), 0);
+		if (e != sizeof(obj)){
+			perror("send()");
+			exit(-1);
+		}	
 	}
+	
+	close(sd); // Fermeture de la socket
+	printf("J'ai fini mon travail, bye bye !\n");
 }
-
-
